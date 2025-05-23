@@ -77,8 +77,8 @@ if __name__ == "__main__":
     shortened_data = raw_data[0]+"\n"+raw_data[len(raw_data)-1]
 
     print(f"\nReport for {location} from {date_range}\n")
-    print("Raw Data:\n", shortened_data)#splice for now since chatgpt charges stuff per character
+    print("Raw Data:\n", shortened_data)#shorten data because apparently chatgpt charges money per character
 
     report = generate_report(location, date_range, raw_data)
-    print("AI-Generated Report:\n")
+    print("AI-Generated Report using starting date and ending date values:\n")
     print(report)
