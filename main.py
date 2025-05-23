@@ -21,11 +21,12 @@ def generate_dummy_data(start_date, end_date):
         'damage': ['none', 'minor', 'moderate', 'severe'],
     }
 
-    delta = (end_date - start_date).days + 1
+    how_long = (end_date - start_date).days + 1
     data = []
 
     # Random data points for the days
-    for i in range(delta):
+    # I used uniform because it supposedly chooses numbers mire equally
+    for i in range(how_long):
         date = (start_date + timedelta(days=i)).strftime("%b-%d-%Y").lower()
         for key in weather_keys:
             if key == 'damage':
@@ -42,7 +43,7 @@ def generate_dummy_data(start_date, end_date):
     
     return '\n'.join(data)
 
-# Call OpenAI to generate report
+# Ring up openai to generate report
 def generate_report(location: str, date_range: str, raw_data: str):
     prompt = f"""
 You are a scientific analyst. Write a concise summary of weather-related damage in {location} between {date_range}.
