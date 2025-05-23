@@ -1,57 +1,84 @@
 import random
-import openai
-import os
-from dotenv import load_dotenv
 from datetime import datetime, timedelta
+from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
-# Load API key from .env
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Generate random date range in 2024
+# Random date range in 2024
 def get_random_dates():
-    start_day = random.randint(1, 300)
+    start_day = random.randint(1, 200)# start from day 1 of the year to day whatever, i chose 200
     start_date = datetime(2024, 1, 1) + timedelta(days=start_day)
-    end_date = start_date + timedelta(days=random.randint(3, 10))
-    return start_date.strftime("%B %d, %Y"), end_date.strftime("%B %d, %Y")
+    end_date = start_date + timedelta(days=random.randint(2, 4))
+    return start_date, end_date
 
-# Dummy raw data
-dummy_data = """
-On April 15th, 2024, Houston experienced severe thunderstorms that brought 6 inches of rain in under 12 hours. 
-Localized flooding caused significant disruption, with over 150 homes reporting damage in Harris County. 
-Emergency services responded to 23 high-water rescues.
+# Generate dummy weather data
+def generate_dummy_data(start_date, end_date):
+    weather_keys = ['rain-inches', 'wind-mph', 'damage-scale', 'power-outages', 'flood-depth-ft']
+    descriptors = {
+        'damage': ['none', 'minor', 'moderate', 'severe'],
+    }
 
-Later in July, a heatwave struck the Houston area, pushing temperatures above 105°F for 5 consecutive days. 
-This led to at least 8 reported heat-related hospitalizations and strained the local energy grid, resulting in rolling blackouts.
-"""
+    delta = (end_date - start_date).days + 1
+    data = []
 
-# Call OpenAI to summarize and analyze
+    # Random data points for the days
+    for i in range(delta):
+        date = (start_date + timedelta(days=i)).strftime("%b-%d-%Y").lower()
+        for key in weather_keys:
+            if key == 'damage':
+                val = random.choice(descriptors['damage'])
+            elif key == 'rain-inches':
+                val = round(random.uniform(0.1, 15.0), 1)
+            elif key == 'wind-mph':
+                val = random.randint(5, 100)
+            elif key == 'power-outages':
+                val = random.randint(0, 10000)
+            elif key == 'flood-depth-ft':
+                val = round(random.uniform(0.0, 6.0), 1)
+            data.append(f"{date}_{key}: {val}")
+    
+    return '\n'.join(data)
+
+# Call OpenAI to generate report
 def generate_report(location: str, date_range: str, raw_data: str):
     prompt = f"""
-You are a scientific analyst. Write a professional summary of weather-related damage in {location} between {date_range}.
+You are a scientific analyst. Write a concise summary of weather-related damage in {location} between {date_range}.
+
+The data is structured like this:
+<date>_<event-type>: <value>
+
+Summarize major weather events, total precipitation, wind speeds, damage levels, and impact on population/infrastructure. Use the data to support your analysis. Use 2–3 short, analytical paragraphs.
 
 Here is the raw data:
 {raw_data}
-
-Your report should summarize major events and provide quantitative analysis if available. Include total damage, event types, and impact on population or infrastructure. Use 2–3 concise paragraphs.
 """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a scientific analyst."},
+            {"role": "system", "content": "You are a scientific analyst that specializes in meteorology."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.3
     )
-    return response['choices'][0]['message']['content']
 
-# Main execution
+    return response.choices[0].message.content
+
 if __name__ == "__main__":
-    start, end = get_random_dates()
-    date_range = f"{start} to {end}"
     location = "Houston, Texas"
-    
-    print(f"\n📍 Report for {location} from {date_range}\n")
-    report = generate_report(location, date_range, dummy_data)
+    start_date, end_date = get_random_dates()
+    date_range = f"{start_date.strftime('%B %d, %Y')} to {end_date.strftime('%B %d, %Y')}"
+
+    raw_data = generate_dummy_data(start_date, end_date)
+    raw_data = raw_data.split("\n")
+    shortened_data = raw_data[0]+"\n"+raw_data[len(raw_data)-1]
+
+    print(f"\nReport for {location} from {date_range}\n")
+    print("Raw Data:\n", shortened_data)#splice for now since chatgpt charges stuff per character
+
+    report = generate_report(location, date_range, raw_data)
+    print("AI-Generated Report:\n")
     print(report)
