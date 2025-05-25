@@ -28,6 +28,7 @@ def generate_dummy_data(start_date, end_date):
     # I used uniform because it supposedly chooses numbers mire equally
     for i in range(how_long):
         date = (start_date + timedelta(days=i)).strftime("%b-%d-%Y").lower()
+        day_data = ""
         for key in weather_keys:
             if key == 'damage':
                 val = random.choice(descriptors['damage'])
@@ -39,7 +40,9 @@ def generate_dummy_data(start_date, end_date):
                 val = random.randint(0, 10000)
             elif key == 'flood-depth-ft':
                 val = round(random.uniform(0.0, 6.0), 1)
-            data.append(f"{date}_{key}: {val}")
+            day_data = day_data + f"{date}_{key}: {val}"
+        day_data = day_data+". "
+        data.append(day_data)
     
     return '\n'.join(data)
 
@@ -50,7 +53,7 @@ You are a scientific analyst. Write a concise summary of weather-related damage 
 
 The data is structured like this:
 <date>_<event-type>: <value>
-
+Each data point for each day is separated with ".", and days are separated with a new line
 Summarize major weather events, total precipitation, wind speeds, damage levels, and impact on population/infrastructure. Use the data to support your analysis. Use 2–3 short, analytical paragraphs.
 
 Here is the raw data:
@@ -78,8 +81,9 @@ if __name__ == "__main__":
     shortened_data = raw_data[0]+"\n"+raw_data[len(raw_data)-1]
 
     print(f"\nReport for {location} from {date_range}\n")
-    print("Raw Data:\n", shortened_data)#shorten data because apparently chatgpt charges money per character
+    print("Original Raw Data:\n", raw_data)
+    print("Shortened Raw Data:\n", shortened_data)#shorten data because apparently chatgpt charges money per character
 
-    report = generate_report(location, date_range, raw_data)
+    report = generate_report(location, date_range, shortened_data)
     print("AI-Generated Report using starting date and ending date values:\n")
     print(report)
