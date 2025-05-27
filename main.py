@@ -66,7 +66,6 @@ Here is the raw data:
             {"role": "system", "content": "You are a scientific analyst that specializes in meteorology."},
             {"role": "user", "content": prompt}
         ],
-        temperature=0.3
     )
 
     return response.choices[0].message.content
