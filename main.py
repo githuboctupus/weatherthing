@@ -60,7 +60,7 @@ Here is the raw data:
 {raw_data}
 """
 
-    response = client.chat.completions.create(
+    response = client.chat.completions.create( #once we use actual data, ask chat gpt to use public articles/opinions and stuff
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a scientific analyst that specializes in meteorology."},
