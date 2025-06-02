@@ -56,10 +56,9 @@ def load_isd_history(file_path="isd-history.csv"):
 
 def find_best_station_for_city(city_name, state_code, stations):
     city_name = city_name.lower()
-    print(city_name)
+    #print(city_name)
     state_code = state_code.upper()
-    print(state_code)
-    print(stations[0])
+    #print(state_code)
     # Filter stations in the same state, with city name substring match
     candidate_stations = [
         s for s in stations
@@ -76,7 +75,7 @@ def find_best_station_for_city(city_name, state_code, stations):
     return candidate_stations[0] if candidate_stations else None
 
 
-if __name__ == "__main__":
+def find_desired_station():
     state_input = input("Enter a state name: ")
     top_cities = get_top_cities_in_state(state_input)
 
@@ -105,13 +104,17 @@ if __name__ == "__main__":
 
             print(f"\nBest station for {city['city']}:")
             print(f"Station Name: {best_station['NAME']}")
-            cities_stations.append(best_station['NAME'])
+            cities_stations.append(best_station)
             print(f"Coverage: {best_station['BEGIN'].date()} to {best_station['END'].date()} ({best_station['coverage_days']} days)")
-            print(f"USAF-WBAN: {best_station['USAF']}-{best_station['WBAN']}")
+            #print(f"USAF-WBAN: {best_station['USAF']}-{best_station['WBAN']}")
             if distance_km is not None:
                 print(f"Distance from city center: {distance_km:.2f} km")
         else:
             print(f"No suitable station found for {city['city']}")
-    citychoice = int(input("Enter the number of the city that you want to analyze the weather patterns of"))
-    stationchoice = cities_stations[citychoice]
+    for i in range(len(top_cities)):
+        print((1+i), "-", top_cities[i]['city'])
+    citychoice = int(input("Enter the number of the city that you want to analyze the weather patterns of: "))
+    stationchoice = cities_stations[citychoice-1]
+    print(stationchoice)
+    return (stationchoice['LAT'], stationchoice['LON'])
     
