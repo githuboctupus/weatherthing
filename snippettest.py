@@ -1,6 +1,7 @@
 
 import cityfinder
 def load_ghcnd_stations(filepath="GHCND_stations.txt"):
+    #loads all GHCND stations
     stations = {}
     with open(filepath, 'r') as file:
         for line in file:
@@ -24,6 +25,8 @@ ghcnd_stations = load_ghcnd_stations()
 from geopy.distance import geodesic
 
 def find_closest_ghcnd_station(lat, lon, ghcnd_stations):
+    #uses lat lon of the station found in cityfinder's function to locate the corresponding
+    # ID of the GHCND station
     min_dist = float('inf')
     closest_station = None
     for station in ghcnd_stations.values():

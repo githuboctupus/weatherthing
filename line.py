@@ -1,3 +1,5 @@
+#used for eventually calculating R^2 of graphs 
+
 def calculate_r_squared(y_values):
     n = len(y_values)
     x_values = list(range(1, n + 1))  # x = 1, 2, 3, ..., n

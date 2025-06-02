@@ -1,3 +1,7 @@
+#use this so that we don't have to rely on scanning through massive csv files or txt files
+#but currently scanning csv files are pretty fast
+#it's just the GHCND_stations.txt that takes a while to scan
+
 import json
 import os
 from geopy.geocoders import Nominatim

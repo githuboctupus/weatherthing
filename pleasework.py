@@ -1,3 +1,5 @@
+#not in use
+
 import requests
 from geopy.distance import geodesic
 from dotenv import load_dotenv

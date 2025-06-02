@@ -11,6 +11,7 @@ NOAA_TOKEN = os.getenv("NOAA_API_KEY")
 
 
 def get_top_cities_in_state(state_name, csv_path="uscities.csv", top_n=5):
+    #looks through uscities.csv to find largest populations of cities in a certain state
     top_cities = []
 
     with open(csv_path, newline='', encoding='utf-8') as csvfile:
@@ -25,6 +26,7 @@ def get_top_cities_in_state(state_name, csv_path="uscities.csv", top_n=5):
     return top_cities
 
 def load_isd_history(file_path="isd-history.csv"):
+    #loads the isd-history.csv, with contains data for all the stations under NOAA
     stations = []
     with open(file_path, newline='', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -55,6 +57,8 @@ def load_isd_history(file_path="isd-history.csv"):
 
 
 def find_best_station_for_city(city_name, state_code, stations):
+    #takes in city name, the state code (TX for example), 
+    # and list of all stations (from load_isd function)
     city_name = city_name.lower()
     #print(city_name)
     state_code = state_code.upper()
@@ -76,6 +80,7 @@ def find_best_station_for_city(city_name, state_code, stations):
 
 
 def find_desired_station():
+    #run this to find the GHCND station of the user's selected city
     state_input = input("Enter a state name: ")
     top_cities = get_top_cities_in_state(state_input)
 
