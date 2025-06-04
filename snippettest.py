@@ -24,9 +24,10 @@ ghcnd_stations = load_ghcnd_stations()
 # match based on proximity
 from geopy.distance import geodesic
 
-def find_closest_ghcnd_station(lat, lon, ghcnd_stations):
+def find_closest_ghcnd_station(lat, lon):
     #uses lat lon of the station found in cityfinder's function to locate the corresponding
     # ID of the GHCND station
+    ghcnd_stations = load_ghcnd_stations()
     min_dist = float('inf')
     closest_station = None
     for station in ghcnd_stations.values():
@@ -38,6 +39,7 @@ def find_closest_ghcnd_station(lat, lon, ghcnd_stations):
 
 if __name__ == "__main__":
     selected = cityfinder.find_desired_station()
-    station = find_closest_ghcnd_station(selected[0], selected[1], load_ghcnd_stations())
+    print("SELECTED:", selected)
+    station = find_closest_ghcnd_station(selected[0], selected[1])
     print("done")
     print(f"Closest GHCND station ID: {station['id']}, Name: {station['name']}")

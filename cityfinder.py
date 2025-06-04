@@ -121,5 +121,7 @@ def find_desired_station():
     citychoice = int(input("Enter the number of the city that you want to analyze the weather patterns of: "))
     stationchoice = cities_stations[citychoice-1]
     print(stationchoice)
-    return (stationchoice['LAT'], stationchoice['LON'])
-    
+    return (stationchoice['LAT'], stationchoice['LON'], top_cities[citychoice-1])
+
+if __name__=="__main__":
+    find_desired_station()

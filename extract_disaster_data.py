@@ -19,6 +19,7 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
     Scans NOAA storm data CSVs and returns a dictionary:
     {date: {damage_property: X, injuries: Y, etc}} for events near the specified city.
     """
+    print(city_name)
     city_name = city_name.lower()
     state_code = state_code.upper()
 
@@ -77,19 +78,19 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
                     }
 
     return results
+if __name__ == "__main__":
+    # Example usage:
+    storm_event_data = get_event_data_near_city(
+        city_name="Houston",
+        state_code="TEXAS",
+        event_type="Thunderstorm Wind",
+        storm_data_dir="data",  # Folder containing all CSVs
+        radius_km=75
+    )
+    print(len(storm_event_data))
+    # Show first few:
+    for date, data in list(storm_event_data.items())[:5]:
+        print("printing")
+        print(f"{date}: {data}")
 
-# Example usage:
-storm_event_data = get_event_data_near_city(
-    city_name="Houston",
-    state_code="TEXAS",
-    event_type="Thunderstorm Wind",
-    storm_data_dir="data",  # Folder containing all CSVs
-    radius_km=75
-)
-print(len(storm_event_data))
-# Show first few:
-for date, data in list(storm_event_data.items())[:5]:
-    print("printing")
-    print(f"{date}: {data}")
-
-print("done")
+    print("done")
