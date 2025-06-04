@@ -91,7 +91,7 @@ def find_desired_station():
     print("\nLoading ISD station history...")
     isd_stations = load_isd_history("isd-history.csv")
 
-    geolocator = Nominatim(user_agent="weatherthing", timeout=10)
+    geolocator = Nominatim(user_agent="weatherthingidk", timeout=30)
 
     print("\nFinding best weather stations for each city based on ISD history...")
     cities_stations = []

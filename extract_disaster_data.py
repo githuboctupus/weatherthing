@@ -24,7 +24,7 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
     state_code = state_code.upper()
 
     # Get city coordinates using geopy
-    geolocator = Nominatim(user_agent="event_locator", timeout=10)
+    geolocator = Nominatim(user_agent="event_locator", timeout=30)
     location = geolocator.geocode(f"{city_name}, {state_code}, USA")
     if not location:
         print(f"Could not geocode city: {city_name}, {state_code}")

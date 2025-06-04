@@ -75,7 +75,7 @@ def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=10):
 if __name__ == "__main__":
     # Customize these as needed:
     analyze_recent_disasters_weather(
-        event_type="Thunderstorm",
+        event_type="Thunderstorm Wind",
         storm_data_dir="data",  # Folder with NOAA CSVs
         top_n=10
     )
