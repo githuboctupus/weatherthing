@@ -5,6 +5,7 @@ from extract_disaster_data import get_event_data_near_city
 from snippettest import load_ghcnd_stations, find_closest_ghcnd_station
 from geopy.geocoders import Nominatim
 import cityfinder
+import json
 
 # Load NOAA API token from environment
 NOAA_TOKEN = os.getenv("NOAA_API_KEY")
@@ -51,7 +52,8 @@ def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=10):
     lat, lon, city_dict = cityfinder.find_desired_station()
     disasters = get_event_data_near_city(city_dict['city'], city_dict['state_name'].upper(), event_type, storm_data_dir)#TEXAS
     sorted_disasters = sorted(disasters.items(), key=lambda x: x[0], reverse=True)[:top_n]
-
+    print(sorted_disasters)
+    #quit()
     if not sorted_disasters:
         print("No disasters found for this configuration.")
         return
@@ -61,21 +63,39 @@ def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=10):
     station_id = closest_station['id']
     print(station_id)
     #quit()
-    # Step 3: Analyze post-disaster weather
+    # Step 3: Analyze post-disaster weather\
+    desired_metrics = {"TMIN", "TMAX", "TAVG", "PRCP", "AWND", "RHAV", "SNWD"}
+    filtered_weather = {}
+    days_after=4
     for date, info in sorted_disasters:
         start = (date + timedelta(days=1)).strftime("%Y-%m-%d")
-        end = (date + timedelta(days=7)).strftime("%Y-%m-%d")
+        end = (date + timedelta(days=days_after)).strftime("%Y-%m-%d")
         weather_data = scrape_ghcnd_data(station_id, start, end, NOAA_TOKEN)
+
         for date, metrics in weather_data.items():
+            #print(date)
+            #print(type(date))
+            filtered_weather[date] = {k: v for k, v in metrics.items() if k in desired_metrics}
+            #print(filtered_weather[date])
+            #quit()
             print(f"📅 {date}:")
             for dtype, val in metrics.items():
-                print(f"   • {dtype} = {val}")
+                if dtype in desired_metrics:
+                    print(f"   • {dtype} = {val}")
+        
+    return city_dict, filtered_weather
 
 # Example usage:
 if __name__ == "__main__":
     # Customize these as needed:
-    analyze_recent_disasters_weather(
-        event_type="Thunderstorm Wind",
-        storm_data_dir="data",  # Folder with NOAA CSVs
+    event_type="Thunderstorm Wind"
+    city_dict, weather_data = analyze_recent_disasters_weather(
+        event_type=event_type,
+        storm_data_dir="recent_data",  # Folder with NOAA CSVs
         top_n=10
     )
+    print(weather_data)
+    prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
+    print(prompt)
+
+
