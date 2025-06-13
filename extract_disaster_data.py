@@ -67,25 +67,32 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
                     continue
 
                 if date not in results:
+                    try:
+                        property_damage = float(row.get("DAMAGE_PROPERTY")[:-1])
+                    except:
+                        property_damage=0
+                    try:
+                        crop_damage = float(row.get("DAMAGE_CROPS")[:-1])
+                    except:
+                        crop_damage=0
+                    
                     results[date] = {
-                        "damage_property": row.get("DAMAGE_PROPERTY", "0"),
-                        "damage_crops": row.get("DAMAGE_CROPS", "0"),
-                        "injuries_direct": row.get("INJURIES_DIRECT", "0"),
-                        "injuries_indirect": row.get("INJURIES_INDIRECT", "0"),
-                        "deaths_direct": row.get("DEATHS_DIRECT", "0"),
-                        "deaths_indirect": row.get("DEATHS_INDIRECT", "0"),
+                        "damage": property_damage+crop_damage,
+                        "injuries": int(row.get("INJURIES_DIRECT", "0"))+int(row.get("INJURIES_INDIRECT", "0")),
+                        "deaths": int(row.get("DEATHS_DIRECT", "0"))+int(row.get("DEATHS_INDIRECT", "0")),
                         "event_description": row.get("EVENT_NARRATIVE", "")
                     }
-
-    return results
+                    results[date]["importance"] = results[date]["damage"]+results[date]["injuries"]*50+results[date]["deaths"]*1000
+    sorted_results = dict(sorted(results.items(), key=lambda x: x[1]["importance"], reverse=True))
+    return sorted_results
 if __name__ == "__main__":
     # Example usage:
     storm_event_data = get_event_data_near_city(
         city_name="Houston",
         state_code="TEXAS",
-        event_type="Thunderstorm Wind",
-        storm_data_dir="data",  # Folder containing all CSVs
-        radius_km=75
+        event_type="Flash Flood",
+        storm_data_dir="recent_data",  # Folder containing all CSVs
+        radius_km=100
     )
     print(len(storm_event_data))
     # Show first few:

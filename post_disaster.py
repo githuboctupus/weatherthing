@@ -6,6 +6,7 @@ from snippettest import load_ghcnd_stations, find_closest_ghcnd_station
 from geopy.geocoders import Nominatim
 import cityfinder
 import json
+import itertools
 
 # Load NOAA API token from environment
 NOAA_TOKEN = os.getenv("NOAA_API_KEY")
@@ -47,12 +48,11 @@ def scrape_ghcnd_data(station_id, start_date, end_date, token):
 
     return observations
 
-def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=10):
+def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=3):
     # Step 1: Get recent disaster events
     lat, lon, city_dict = cityfinder.find_desired_station()
     disasters = get_event_data_near_city(city_dict['city'], city_dict['state_name'].upper(), event_type, storm_data_dir)#TEXAS
-    sorted_disasters = sorted(disasters.items(), key=lambda x: x[0], reverse=True)[:top_n]
-    print(sorted_disasters)
+    sorted_disasters = dict(itertools.islice(disasters.items(), top_n))
     #quit()
     if not sorted_disasters:
         print("No disasters found for this configuration.")
@@ -83,19 +83,31 @@ def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=10):
                 if dtype in desired_metrics:
                     print(f"   • {dtype} = {val}")
         
-    return city_dict, filtered_weather
+    return city_dict, filtered_weather, sorted_disasters
 
+
+def create_prompt():
+    event_type=input("Enter the event type: ")
+    city_dict, weather_data, disasters = analyze_recent_disasters_weather(
+        event_type=event_type,
+        storm_data_dir="recent_data",  # Folder with NOAA CSVs
+        top_n=3
+    )
+    #print(weather_data)
+    prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in JSON format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
+    #print(prompt)
+    return prompt
 # Example usage:
 if __name__ == "__main__":
     # Customize these as needed:
-    event_type="Thunderstorm Wind"
-    city_dict, weather_data = analyze_recent_disasters_weather(
+    event_type="Flash Flood"
+    city_dict, weather_data, disasters = analyze_recent_disasters_weather(
         event_type=event_type,
         storm_data_dir="recent_data",  # Folder with NOAA CSVs
-        top_n=10
+        top_n=3
     )
     print(weather_data)
-    prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
+    prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in JSON format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
     print(prompt)
 
 
