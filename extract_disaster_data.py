@@ -34,8 +34,8 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
     print(f"City coordinates: {city_coords}")
 
     files = glob(os.path.join(storm_data_dir, "*.csv"))
-    results = {}
-
+    results = []
+    counter=0
     for file in files:
         print(file)
         with open(file, encoding='latin1') as f:
@@ -65,26 +65,25 @@ def get_event_data_near_city(city_name, state_code, event_type, storm_data_dir, 
 
                 except:
                     continue
-
-                if date not in results:
-                    try:
-                        property_damage = float(row.get("DAMAGE_PROPERTY")[:-1])
-                    except:
-                        property_damage=0
-                    try:
-                        crop_damage = float(row.get("DAMAGE_CROPS")[:-1])
-                    except:
-                        crop_damage=0
-                    
-                    results[date] = {
-                        "damage": property_damage+crop_damage,
-                        "injuries": int(row.get("INJURIES_DIRECT", "0"))+int(row.get("INJURIES_INDIRECT", "0")),
-                        "deaths": int(row.get("DEATHS_DIRECT", "0"))+int(row.get("DEATHS_INDIRECT", "0")),
-                        "event_description": row.get("EVENT_NARRATIVE", "")
-                    }
-                    results[date]["importance"] = results[date]["damage"]+results[date]["injuries"]*50+results[date]["deaths"]*1000
-    sorted_results = dict(sorted(results.items(), key=lambda x: x[1]["importance"], reverse=True))
-    return sorted_results
+                try:
+                    property_damage = float(row.get("DAMAGE_PROPERTY")[:-1])
+                except:
+                    property_damage=0
+                try:
+                    crop_damage = float(row.get("DAMAGE_CROPS")[:-1])
+                except:
+                    crop_damage=0
+                
+                results.append([date, {
+                    "damage": property_damage+crop_damage,
+                    "injuries": int(row.get("INJURIES_DIRECT", "0"))+int(row.get("INJURIES_INDIRECT", "0")),
+                    "deaths": int(row.get("DEATHS_DIRECT", "0"))+int(row.get("DEATHS_INDIRECT", "0")),
+                    "event_description": row.get("EVENT_NARRATIVE", "")
+                }])
+                results[counter][1]["importance"] = results[counter][1]["damage"]+results[counter][1]["injuries"]*50+results[counter][1]["deaths"]*1000
+                counter+=1
+    results.sort(key=lambda x: x[1]["importance"], reverse=True)
+    return results
 if __name__ == "__main__":
     # Example usage:
     storm_event_data = get_event_data_near_city(
