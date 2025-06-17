@@ -97,7 +97,7 @@ def create_prompt():
     #print(weather_data)
     prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in list[datetimeobejct, JSON] format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
     #print(prompt)
-    return prompt
+    return prompt, weather_data, disasters, city_dict
 # Example usage:
 if __name__ == "__main__":
     # Customize these as needed:
@@ -108,6 +108,7 @@ if __name__ == "__main__":
         top_n=3
     )
     print(weather_data)
+    print(disasters)
     prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in list[datetimeobject, JSON] format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
     print(prompt)
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Disaster Data Viewer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Disaster Data Viewer</h1>
+
+    <input type="text" id="stateInput" placeholder="Enter a state (e.g., Texas)" />
+    <button onclick="fetchCities()">Get Cities</button>
+    <br>
+    <div id="cityContainer" style="display:none; margin-top: 10px;">
+      <label for="citySelect">Choose a city:</label>
+      <select id="citySelect"></select>
+    </div>
+
+    <input type="text" id="disasterInput" placeholder="Enter a disaster type (e.g., Flood)" style="margin-top:10px;" />
+    <button onclick="fetchDisasterData()">Submit</button>
+
+    <pre id="output" style="margin-top:20px;"></pre>
+  </div>
+
+  <script>
+    async function fetchCities() {
+      const state = document.getElementById("stateInput").value.trim();
+      if (!state) {
+        alert("Please enter a state.");
+        return;
+      }
+
+      const response = await fetch("/get_cities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ state })
+      });
+
+      const cities = await response.json();
+
+      if (!Array.isArray(cities) || cities.length === 0) {
+        alert("No cities found for that state.");
+        return;
+      }
+
+      const citySelect = document.getElementById("citySelect");
+      citySelect.innerHTML = "";
+      cities.forEach(cityObj => {
+        const option = document.createElement("option");
+        option.value = cityObj.city;
+        option.textContent = `${cityObj.index}. ${cityObj.city}`;
+        citySelect.appendChild(option);
+      });
+
+      document.getElementById("cityContainer").style.display = "block";
+      document.getElementById("output").textContent = ""; // clear previous output
+    }
+
+    async function fetchDisasterData() {
+      const city = document.getElementById("citySelect").value;
+      const disaster = document.getElementById("disasterInput").value.trim();
+
+      if (!city) {
+        alert("Please select a city.");
+        return;
+      }
+      if (!disaster) {
+        alert("Please enter a disaster type.");
+        return;
+      }
+
+      const response = await fetch("/get_disaster_data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ city, disaster })
+      });
+
+      const data = await response.json();
+
+      // Format and display result nicely
+      let outputStr = data.summary + "\n\nEvents:\n";
+      data.events.forEach(([date, details]) => {
+        outputStr += `- ${date}: ${details.event_description} (Damage: ${details.damage}, Deaths: ${details.deaths}, Injuries: ${details.injuries})\n`;
+      });
+
+      outputStr += "\nWeather Data:\n";
+      for (const [date, weather] of Object.entries(data.weather_data)) {
+        outputStr += `  ${date}: Wind Speed ${weather.AWND} mph, Precipitation ${weather.PRCP} in, Humidity ${weather.RHAV}%, Avg Temp ${weather.TAVG} °C\n`;
+      }
+
+      document.getElementById("output").textContent = outputStr;
+    }
+  </script>
+</body>
+</html>

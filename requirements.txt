@@ -2,3 +2,4 @@ openai==1.82.1
 geopy==2.4.1
 dotenv==0.9.9
 requests==2.32.3
+bottle

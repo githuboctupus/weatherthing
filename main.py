@@ -49,7 +49,7 @@ def generate_dummy_data(start_date, end_date):
 
 # Ring up openai to generate report
 def generate_report():
-    prompt = post_disaster.create_prompt()
+    prompt, weather_data, disasters, city_dict = post_disaster.create_prompt()
     response = client.chat.completions.create( #once we use actual data, ask chat gpt to use public articles/opinions and stuff
         model="gpt-4o",
         messages=[
@@ -58,7 +58,7 @@ def generate_report():
         ],
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content, weather_data, disasters, city_dict
 
 if __name__ == "__main__":
     report = generate_report()
