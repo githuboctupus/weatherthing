@@ -48,9 +48,14 @@ def scrape_ghcnd_data(station_id, start_date, end_date, token):
 
     return observations
 
-def analyze_recent_disasters_weather(event_type, storm_data_dir, top_n=3):
+def analyze_recent_disasters_weather(event_type, top_n=3, inputcity=False):
     # Step 1: Get recent disaster events
-    lat, lon, city_dict = cityfinder.find_desired_station()
+    storm_data_dir = "recent_data"
+    if inputcity==False:
+        lat, lon, city_dict = cityfinder.find_desired_station()
+    else:
+        lat, lon, city_dict = cityfinder.find_desired_station_modified(inputcity)
+    
     disasters = get_event_data_near_city(city_dict['city'], city_dict['state_name'].upper(), event_type, storm_data_dir)#TEXAS
     sorted_disasters = disasters[:top_n]
     #quit()
@@ -91,8 +96,8 @@ def create_prompt():
     event_type=input("Enter the event type: ")
     city_dict, weather_data, disasters = analyze_recent_disasters_weather(
         event_type=event_type,
-        storm_data_dir="recent_data",  # Folder with NOAA CSVs
-        top_n=3
+        top_n=3,
+        inputcity="houston"
     )
     #print(weather_data)
     prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in list[datetimeobejct, JSON] format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
@@ -107,6 +112,7 @@ if __name__ == "__main__":
         storm_data_dir="recent_data",  # Folder with NOAA CSVs
         top_n=3
     )
+    
     print(weather_data)
     print(disasters)
     prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in list[datetimeobject, JSON] format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
