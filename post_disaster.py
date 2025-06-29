@@ -92,12 +92,18 @@ def analyze_recent_disasters_weather(event_type, top_n=3, inputcity=False):
     return city_dict, filtered_weather, sorted_disasters
 
 
-def create_prompt():
-    event_type=input("Enter the event type: ")
+def create_prompt(event_type=False, input_city=False):
+    if not event_type:
+        event_type=input("Enter the event type: ")
+    if not input_city:
+        input_city=input("Enter city name: ").lower()
+    print(event_type)
+    print(input_city)
+    print("done")
     city_dict, weather_data, disasters = analyze_recent_disasters_weather(
         event_type=event_type,
         top_n=3,
-        inputcity="houston"
+        inputcity=input_city
     )
     #print(weather_data)
     prompt = f"You are a scientific analyst/weather expert that is analyzing weather patterns after a {event_type} at {city_dict['city']}. Here is the data on each event in list[datetimeobejct, JSON] format: {disasters}. Here is the post-event data from the NOAA GHCND database in a JSON format:{json.dumps(weather_data)}. Use other sources of info along with the data given to give a report on what is typically seen at this location after the given event, and how consistent these post-disaster patterns are."
