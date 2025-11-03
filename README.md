@@ -1,34 +1,3 @@
-Conversation opened. 5 messages. 1 message unread.
-
-Skip to content
-Using Gmail with screen readers
-1 of 1,100
-Re: Document shared with you: "GT Essay.docx"
-Inbox
-
-Yang Chen
-Sun, Nov 2, 3:20 PM (18 hours ago)
-I am good with it. How is your Github repo preparation going? Repo1 DeepLabv3 notebook + version history record + detailed document Use chatgpt to convert the d
-2
-
-Yang Chen
-Sun, Nov 2, 9:37 PM (12 hours ago)
-Yep. No problem. I have a tool that can scan your code and generate the readme/diagram. No worries. It doesn't affect your GT application submission. No AO will
-
-Yang Chen
-Attachments
-9:53 AM (6 minutes ago)
-to Shen, me
-
-Here are the README.md and functional diagram as we discussed for the Flank weather project.
-
-1. Remember to put the diagram into the markdown document.
-2. Remember to add the "license" info in the README.md
- 2 Attachments
-  •  Scanned by Gmail
-
-
-
 # WeatherThing
 
 A Python-based weather analysis application that studies weather patterns following natural disasters in specific US cities. The application combines historical storm data with real-time weather information to generate AI-powered scientific analysis reports.
