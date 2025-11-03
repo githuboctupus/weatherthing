@@ -1,3 +1,7 @@
+#frontend isn't quite working yet
+#refer to main.py for the backend scripts (working, but you'll need your own tokens since mine
+#are kept private to myself for obvious reasons)
+
 from bottle import route, run, request, static_file
 import json
 from datetime import datetime
@@ -15,7 +19,6 @@ def send_static(filename):
 def get_cities():
     data = request.json
     state = data.get('state')
-    # You would replace this with your real function
     cities = get_top_cities(state)
     return json.dumps(cities)
 
@@ -27,10 +30,7 @@ def get_data():
     result = get_disaster_data(city, disaster)
     return json.dumps(result, default=str)
 
-# -----------------------------
-# Replace these with your real logic:
 def get_top_cities(state):
-    # Example dummy data
     top_cities = cityfinder.get_top_cities_in_state(state)
     returnme = ""
     for i in range(len(top_cities)):
