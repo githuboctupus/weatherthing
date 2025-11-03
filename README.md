@@ -155,10 +155,6 @@ weatherthing-main/
 4. Test thoroughly
 5. Submit a pull request
 
-## License
-
-[Add your license information here]
-
 ## Disclaimer
 
 This tool is for research and educational purposes. Weather analysis should be verified with official meteorological sources for any critical applications.
