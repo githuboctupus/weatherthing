@@ -1,3 +1,5 @@
+#this the main backend scripts that work provided you have the tokens for NOAA API and OPENAI
+
 import random
 from datetime import datetime, timedelta
 from openai import OpenAI
